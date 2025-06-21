@@ -49,7 +49,7 @@ services:
     network_mode: "service:gluetun"
     volumes:
       - radarr-config:/config
-      - /media/OortCloud/organizedMedia/:/data
+      - /mnt/automatedMedia/:/data
     environment:
       - TZ=${TZ}
     restart: unless-stopped
@@ -65,7 +65,7 @@ services:
     network_mode: "service:gluetun"
     volumes:
       - sonarr-config:/config
-      - /media/OortCloud/organizedMedia/:/data
+      - /mnt/automatedMedia/:/data
     environment:
       - TZ=${TZ}
     restart: unless-stopped
@@ -81,7 +81,7 @@ services:
     network_mode: "service:gluetun"
     volumes:
       - qbittorrent-config:/config
-      - /media/OortCloud/organizedMedia/downloads:/data/downloads
+      - /mnt/automatedMedia/downloads:/data/downloads
     environment:
       - TZ=${TZ}
     restart: unless-stopped
