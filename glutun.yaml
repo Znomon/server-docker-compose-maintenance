@@ -1,0 +1,118 @@
+version: "3.8"
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun
+    container_name: gluetun
+    hostname: "vpn"
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - 8888:8888/tcp   # HTTP proxy
+      - 8388:8388/tcp   # Shadowsocks
+      - 8388:8388/udp   # Shadowsocks
+      - 9117:9117       # Jackett
+      - 7878:7878       # Radarr
+      - 8989:8989       # Sonarr
+      - 8080:8080       # qBittorrent
+    volumes:
+      - gluetun-config:/gluetun
+    environment:
+      - VPN_SERVICE_PROVIDER=${VPN_SERVICE_PROVIDER}
+      - OPENVPN_USER=${OPENVPN_USER}
+      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+      - SERVER_COUNTRIES=${SERVER_COUNTRIES}
+      - SERVER_CATEGORIES=${SERVER_CATEGORIES}
+      - TZ=${TZ}
+    restart: always
+
+  jackett:
+    image: linuxserver/jackett:latest
+    container_name: jackett-stack
+    network_mode: "service:gluetun"
+    volumes:
+      - jackett-config:/config
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+    healthcheck:
+      test: curl -sf https://example.com || exit 1
+      interval: 1m
+      timeout: 10s
+      retries: 1
+
+  radarr:
+    image: linuxserver/radarr:latest
+    container_name: movies-radarr-stack
+    network_mode: "service:gluetun"
+    volumes:
+      - radarr-config:/config
+      - /media/OortCloud/organizedMedia/:/data
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+    healthcheck:
+      test: curl -sf https://example.com || exit 1
+      interval: 1m
+      timeout: 10s
+      retries: 1
+
+  sonarr:
+    image: linuxserver/sonarr:latest
+    container_name: tv-sonarr-stack
+    network_mode: "service:gluetun"
+    volumes:
+      - sonarr-config:/config
+      - /media/OortCloud/organizedMedia/:/data
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+    healthcheck:
+      test: curl -sf https://example.com || exit 1
+      interval: 1m
+      timeout: 10s
+      retries: 1
+
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    container_name: qbittorrent-stack
+    network_mode: "service:gluetun"
+    volumes:
+      - qbittorrent-config:/config
+      - /media/OortCloud/organizedMedia/downloads:/data/downloads
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+    healthcheck:
+      test: curl -sf https://example.com || exit 1
+      interval: 1m
+      timeout: 10s
+      retries: 1
+
+  requestrr:
+    image: thomst08/requestrr
+    container_name: requestrr
+    network_mode: bridge
+    ports:
+      - 4545:4545
+    volumes:
+      - requestrr-config:/root/config
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+    healthcheck:
+      test: curl -sf https://example.com || exit 1
+      interval: 1m
+      timeout: 10s
+      retries: 1
+
+volumes:
+  jackett-config:
+  radarr-config:
+  sonarr-config:
+  qbittorrent-config:
+  requestrr-config:
+  crossseed-config:
+  gluetun-config:
