@@ -109,52 +109,10 @@ services:
       retries: 1
 
 volumes:
-  gluetun-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: /mnt/dockerdata/gluetun-config
-      o: bind
-
   jackett-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: /mnt/dockerdata/jackett-config
-      o: bind
-
   radarr-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: /mnt/dockerdata/radarr-config
-      o: bind
-
   sonarr-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: /mnt/dockerdata/sonarr-config
-      o: bind
-
   qbittorrent-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: /mnt/dockerdata/qbittorrent-config
-      o: bind
-
   requestrr-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: /mnt/dockerdata/requestrr-config
-      o: bind
-
-  # (If you’re not actually using crossseed-config, you can remove it; otherwise:)
   crossseed-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: /mnt/dockerdata/crossseed-config
-      o: bind
+  gluetun-config:
