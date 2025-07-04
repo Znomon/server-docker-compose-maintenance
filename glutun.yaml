@@ -1,24 +1,23 @@
 version: "3.8"
-
 services:
   gluetun:
     image: qmcgaw/gluetun
     container_name: gluetun
-    hostname: "vpn"
+    hostname: vpn
     cap_add:
       - NET_ADMIN
     devices:
       - /dev/net/tun:/dev/net/tun
     ports:
-      - 8888:8888/tcp   # HTTP proxy
-      - 8388:8388/tcp   # Shadowsocks
-      - 8388:8388/udp   # Shadowsocks
-      - 9117:9117       # Jackett
-      - 7878:7878       # Radarr
-      - 8989:8989       # Sonarr
-      - 8080:8080       # qBittorrent
+      - 8888:8888/tcp # HTTP proxy
+      - 8388:8388/tcp # Shadowsocks
+      - 8388:8388/udp # Shadowsocks
+      - 9117:9117 # Jackett
+      - 7878:7878 # Radarr
+      - 8989:8989 # Sonarr
+      - 8080:8080 # qBittorrent
     volumes:
-      - gluetun-config:/gluetun
+      - /mnt/cloud/dockerData/portainer-created-container-data/gluetun-config:/gluetun
     environment:
       - VPN_SERVICE_PROVIDER=${VPN_SERVICE_PROVIDER}
       - OPENVPN_USER=${OPENVPN_USER}
@@ -27,13 +26,12 @@ services:
       - SERVER_CATEGORIES=${SERVER_CATEGORIES}
       - TZ=${TZ}
     restart: always
-
   jackett:
     image: linuxserver/jackett:latest
     container_name: jackett-stack
-    network_mode: "service:gluetun"
+    network_mode: service:gluetun
     volumes:
-      - jackett-config:/config
+      - /mnt/cloud/dockerData/portainer-created-container-data/jackett-config:/config
     environment:
       - TZ=${TZ}
     restart: unless-stopped
@@ -42,14 +40,13 @@ services:
       interval: 1m
       timeout: 10s
       retries: 1
-
   radarr:
     image: linuxserver/radarr:latest
     container_name: movies-radarr-stack
-    network_mode: "service:gluetun"
+    network_mode: service:gluetun
     volumes:
-      - radarr-config:/config
-      - /mnt/automatedMedia/:/data
+      - /mnt/cloud/dockerData/portainer-created-container-data/radarr-config:/config
+      - /mnt/cloud/automatedMedia/:/data
     environment:
       - TZ=${TZ}
     restart: unless-stopped
@@ -58,14 +55,13 @@ services:
       interval: 1m
       timeout: 10s
       retries: 1
-
   sonarr:
     image: linuxserver/sonarr:latest
     container_name: tv-sonarr-stack
-    network_mode: "service:gluetun"
+    network_mode: service:gluetun
     volumes:
-      - sonarr-config:/config
-      - /mnt/automatedMedia/:/data
+      - /mnt/cloud/dockerData/portainer-created-container-data/sonarr-config:/config
+      - /mnt/cloud/automatedMedia/:/data
     environment:
       - TZ=${TZ}
     restart: unless-stopped
@@ -74,14 +70,13 @@ services:
       interval: 1m
       timeout: 10s
       retries: 1
-
   qbittorrent:
     image: linuxserver/qbittorrent:latest
     container_name: qbittorrent-stack
-    network_mode: "service:gluetun"
+    network_mode: service:gluetun
     volumes:
-      - qbittorrent-config:/config
-      - /mnt/automatedMedia/downloads:/data/downloads
+      - //mnt/cloud/dockerData/portainer-created-container-data/qbittorrent-config:/config
+      - /mnt/cloud/automatedMedia/downloads:/data/downloads
     environment:
       - TZ=${TZ}
     restart: unless-stopped
@@ -90,71 +85,4 @@ services:
       interval: 1m
       timeout: 10s
       retries: 1
-
-  requestrr:
-    image: thomst08/requestrr
-    container_name: requestrr
-    network_mode: bridge
-    ports:
-      - 4545:4545
-    volumes:
-      - requestrr-config:/root/config
-    environment:
-      - TZ=${TZ}
-    restart: unless-stopped
-    healthcheck:
-      test: curl -sf https://example.com || exit 1
-      interval: 1m
-      timeout: 10s
-      retries: 1
-
-volumes:
-  gluetun-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: /mnt/dockerdata/gluetun-config
-      o: bind
-
-  jackett-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: /mnt/dockerdata/jackett-config
-      o: bind
-
-  radarr-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: /mnt/dockerdata/radarr-config
-      o: bind
-
-  sonarr-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: /mnt/dockerdata/sonarr-config
-      o: bind
-
-  qbittorrent-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: /mnt/dockerdata/qbittorrent-config
-      o: bind
-
-  requestrr-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: /mnt/dockerdata/requestrr-config
-      o: bind
-
-  # (If you’re not actually using crossseed-config, you can remove it; otherwise:)
-  crossseed-config:
-    driver: local
-    driver_opts:
-      type: none
-      device: /mnt/dockerdata/crossseed-config
-      o: bind
+networks: {}
